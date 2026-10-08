@@ -1,0 +1,21 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t decision-platform-ci .
+      - run: docker run --rm decision-platform-ci ruff check src tests
+      - run: docker run --rm decision-platform-ci mypy src
+      - run: docker run --rm decision-platform-ci pytest -q --cov=decision_platform --cov-report=term-missing
+      - run: docker build --target test ./go/scoring
+      - run: docker build --target benchmark ./go/scoring
+      - run: docker compose build

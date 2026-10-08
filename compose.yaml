@@ -1,0 +1,35 @@
+services:
+  api:
+    build: .
+    environment:
+      DECISION_ENV: ${DECISION_ENV:-development}
+      JEV_ENABLED: ${JEV_ENABLED:-false}
+      JEV_BASE_URL: ${JEV_BASE_URL:-https://jevtypesafeai.com/api/v1/decide}
+      JEV_API_KEY: ${JEV_API_KEY:-}
+      MIN_SOURCE_COVERAGE: ${MIN_SOURCE_COVERAGE:-0.95}
+      MIN_CLASSIFIER_CONFIDENCE: ${MIN_CLASSIFIER_CONFIDENCE:-0.75}
+      MIN_EVALUATION_SCORE: ${MIN_EVALUATION_SCORE:-0.80}
+      SCORING_URL: http://scoring:8081
+      TELEMETRY_PATH: /tmp/decision-platform-telemetry.jsonl
+    ports:
+      - "8000:8000"
+    depends_on:
+      scoring:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  scoring:
+    build:
+      context: ./go/scoring
+      target: runtime
+    ports:
+      - "8081:8081"
+    healthcheck:
+      test: ["CMD", "/score-api", "-healthcheck"]
+      interval: 5s
+      timeout: 2s
+      retries: 5

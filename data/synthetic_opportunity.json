@@ -1,0 +1,15 @@
+{
+  "title": "Delayed data product refresh",
+  "description": "A synthetic pipeline missed its freshness target while downstream demand increased.",
+  "source": "synthetic-primary",
+  "source_coverage": 0.91,
+  "evidence_count": 2,
+  "impact": 0.84,
+  "urgency": 0.76,
+  "complexity": 0.58,
+  "attributes": {
+    "owner": "platform-team",
+    "region": "example",
+    "token": "never-export-this"
+  }
+}
